@@ -1,4 +1,4 @@
-import {Button, StyleSheet, View, Text} from 'react-native';
+import {Button, StyleSheet, View, Text, Platform} from 'react-native';
 import React from 'react';
 import {
   deleteHabit,
@@ -83,7 +83,17 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   completedHabit: {
-    backgroundColor: '#e1e1e3',
+    ...Platform.select({
+      android: {
+        backgroundColor: '#e1e1e3',
+      },
+      ios: {
+        backgroundColor: '#cacacf',
+      },
+      default: {
+        backgroundColor: '#e1e1e3',
+      },
+    }),
   },
   container: {
     flexDirection: 'row',

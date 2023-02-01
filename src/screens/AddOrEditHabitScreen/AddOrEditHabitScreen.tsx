@@ -29,10 +29,6 @@ const AddOrEditHabitScreen = ({
   const dispatch = useAppDispatch();
   const habitsList = useAppSelector(state => state.habits.habitsList);
 
-  // TODO
-  // check types for navigation
-  // check types for react query
-
   const [currentTypedTag, setCurrentTypedTag] = useState('');
   const [tagsList, setTagsList] = useState(initialTagsList || []);
 

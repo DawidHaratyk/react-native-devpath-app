@@ -1,7 +1,6 @@
 import {Button, StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import {useMutation} from '@tanstack/react-query';
-import {TodoItemParams} from '../../screens/TodosScreen/TodosScreen';
 import {useNavigation} from '@react-navigation/native';
 import {queryClient} from '../../../App';
 import CheckBox from 'react-native-check-box';
@@ -9,6 +8,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {TodosStackParamList} from '../../navigation/TodosStack';
 import {closeTask} from '../../api/closeTask';
 import {deleteTask} from '../../api/deleteTask';
+import {Task} from '@doist/todoist-api-typescript';
 
 type TodoItemNavigationProp = NativeStackNavigationProp<
   TodosStackParamList,
@@ -26,24 +26,18 @@ const TodoItem = ({content, description, id, isCompleted}: Props) => {
   const {navigate} = useNavigation<TodoItemNavigationProp>();
   const [isTodoCompleted, setIsTodoCompleted] = useState(isCompleted || false);
 
-  const updateTodoMutation = useMutation<TodoItemParams[], Error, string>(
-    closeTask,
-    {
-      onSuccess: queryClient.invalidateQueries(['todos']),
-    },
-  );
+  const updateTodoMutation = useMutation<Task[], Error, string>(closeTask, {
+    onSuccess: queryClient.invalidateQueries(['todos']),
+  });
 
   const handleToggleIsTodoCompleted = () => {
     updateTodoMutation.mutate(id);
     setIsTodoCompleted(completed => !completed);
   };
 
-  const deletingTodoMutation = useMutation<TodoItemParams[], Error, string>(
-    deleteTask,
-    {
-      onSuccess: queryClient.invalidateQueries(['todos']),
-    },
-  );
+  const deletingTodoMutation = useMutation<Task[], Error, string>(deleteTask, {
+    onSuccess: queryClient.invalidateQueries(['todos']),
+  });
 
   return (
     <>

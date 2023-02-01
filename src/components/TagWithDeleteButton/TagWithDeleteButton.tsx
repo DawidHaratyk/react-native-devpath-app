@@ -1,9 +1,9 @@
 import {Button, StyleSheet, Text, View} from 'react-native';
-import React, {Dispatch} from 'react';
+import React, {Dispatch, SetStateAction} from 'react';
 
 interface TagWithDeleteButtonProps {
   tag: string;
-  setTagsList: Dispatch<React.SetStateAction<string[]>>;
+  setTagsList: Dispatch<SetStateAction<string[]>>;
 }
 
 const TagWithDeleteButton = ({tag, setTagsList}: TagWithDeleteButtonProps) => {

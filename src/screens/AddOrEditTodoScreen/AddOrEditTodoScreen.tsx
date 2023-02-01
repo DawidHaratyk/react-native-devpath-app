@@ -20,7 +20,9 @@ interface AddOrEditTodoScreenProps {
 const AddOrEditTodoScreen = ({route, navigation}: AddOrEditTodoScreenProps) => {
   const todoId = route.params?.todoId;
 
-  const {data: todoToEdit} = useQuery(['todo', todoId], () => getTask(todoId));
+  const {data: todoToEdit} = useQuery(['todo', todoId], () => getTask(todoId), {
+    enabled: !!todoId,
+  });
 
   const isEditingTodo = todoId !== undefined;
 
