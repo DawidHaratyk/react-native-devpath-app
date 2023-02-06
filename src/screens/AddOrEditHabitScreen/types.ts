@@ -14,6 +14,8 @@ interface FormValues {
   description: string;
   completed: boolean;
   difficultyCount: DifficultyProps;
+  tags: string[];
+  completedDate: string | null;
 }
 
 export type {RouteProps, NavigationProps, FormValues};

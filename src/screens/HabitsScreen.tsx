@@ -1,10 +1,12 @@
 import {StyleSheet, Switch, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import HabitsList from '../components/HabitsList/HabitsList';
 import {HabitsStackParamList} from '../navigation/HabitsStack';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {useAppSelector} from '../app/hooks/hooks';
+import {useAppDispatch, useAppSelector} from '../app/hooks/hooks';
 import FloatingButton from '../components/FloatingButton/FloatingButton';
+import {newDayUpdate} from '../app/habitsSlice/habitsSlice';
+import {HabitsProvider} from '../contexts/HabitsContext';
 
 type HabitsScreenNavigationProp = NativeStackNavigationProp<
   HabitsStackParamList,
@@ -16,42 +18,68 @@ interface HabitsScreenProps {
 }
 
 const HabitsScreen = ({navigation}: HabitsScreenProps) => {
-  const countOfCompletedHabits = useAppSelector(
-    state => state.habits.habitsList.filter(habit => habit.completed).length,
-  );
+  const [tickTak, setTickTak] = useState<boolean>(false);
 
-  const countOfUncompletedHabits = useAppSelector(
-    state => state.habits.habitsList.filter(habit => !habit.completed).length,
-  );
+  const habits = useAppSelector(state => state.habits.habits);
+  const dispatch = useAppDispatch();
 
-  const [areUncompletedHabitsShownOnly, setAreUncompletedHabitsShownOnly] =
-    useState(false);
+  const now = new Date().toLocaleDateString('en-US');
 
-  const goToAddHabitScreen = () =>
-    navigation.navigate('AddOrEditHabitScreen', {
-      areUncompletedHabitsShownOnly,
-    });
+  // const uncompletedHabitsCount = habits[now].filter(
+  //   habit => !habit.completed,
+  // ).length;
+  // const completedHabitsCount = habits[now].filter(
+  //   habit => habit.completed,
+  // ).length;
+
+  const [uncompletedHabitsShown, setUncompletedHabitsShown] = useState(false);
+
+  const goToAddHabitScreen = () => navigation.navigate('AddOrEditHabitScreen');
+
+  useEffect(() => {
+    console.log('xd');
+    const interval = setInterval(() => {
+      setTickTak(prevState => !prevState);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const now = new Date();
+    const nowFormated = now.toLocaleDateString('en-US');
+    const hasDate = Object.keys(habits).includes(nowFormated);
+    const yesterdayHabits =
+      Object.values(habits)[Object.values(habits).length - 1];
+
+    if (hasDate) {
+      return;
+    }
+
+    dispatch(
+      newDayUpdate({habits: yesterdayHabits || [], currentDate: nowFormated}),
+    );
+  }, [tickTak, habits, dispatch]);
 
   return (
-    <View style={styles.habitsScreen}>
-      <Text style={styles.habitsHeader}>List of habits:</Text>
-      <HabitsList
-        areUncompletedHabitsShownOnly={areUncompletedHabitsShownOnly}
-      />
-      <View style={styles.addHabitIconContainer}>
-        <View>
-          <Switch
-            value={areUncompletedHabitsShownOnly}
-            onValueChange={setAreUncompletedHabitsShownOnly}
-          />
+    <HabitsProvider>
+      <View style={styles.habitsScreen}>
+        <Text style={styles.habitsHeader}>List of habits:</Text>
+        <HabitsList uncompletedHabitsShown={uncompletedHabitsShown} />
+        <View style={styles.addHabitIconContainer}>
+          <View>
+            <Switch
+              value={uncompletedHabitsShown}
+              onValueChange={setUncompletedHabitsShown}
+            />
+          </View>
+          <View>
+            {/* <Text>Count of completed: {completedHabitsCount}</Text>
+            <Text>Count of uncompleted: {uncompletedHabitsCount}</Text> */}
+          </View>
+          <FloatingButton handleClick={goToAddHabitScreen} />
         </View>
-        <View>
-          <Text>Count of completed: {countOfCompletedHabits}</Text>
-          <Text>Count of uncompleted: {countOfUncompletedHabits}</Text>
-        </View>
-        <FloatingButton handleClick={goToAddHabitScreen} />
       </View>
-    </View>
+    </HabitsProvider>
   );
 };
 

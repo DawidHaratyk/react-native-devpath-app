@@ -6,14 +6,18 @@ export function SettingsScreen() {
 
   return (
     <View style={styles.settingsScreen}>
-      <Text>{platform}</Text>
+      <Text style={styles.platformText}>{platform}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   settingsScreen: {
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  platformText: {
+    fontSize: 28,
   },
 });

@@ -11,6 +11,7 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {HabitsStackParamList} from '../../navigation/HabitsStack';
 import CheckBox from 'react-native-check-box';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useDate} from '../../contexts/HabitsContext';
 
 type HabitsScreenNavigationProp = NativeStackNavigationProp<
   HabitsStackParamList,
@@ -27,6 +28,7 @@ export const Habit = ({
   const {navigate} = useNavigation<HabitsScreenNavigationProp>();
 
   const dispatch = useAppDispatch();
+  const {now} = useDate();
 
   const tagsList = tags?.map((tag: string, key: number) => (
     <Text key={key}>{tag}</Text>
@@ -37,7 +39,7 @@ export const Habit = ({
   ));
 
   const handleDeletingHabit = () => {
-    dispatch(deleteHabit(id));
+    dispatch(deleteHabit({id, now}));
   };
 
   const handleGoToEditHabitScreen = () =>
@@ -52,7 +54,7 @@ export const Habit = ({
         </View>
         <View style={styles.buttons}>
           <CheckBox
-            onClick={() => dispatch(toggleComplete(id))}
+            onClick={() => dispatch(toggleComplete({id, now}))}
             isChecked={completed}
           />
           <Button title="Edit" onPress={handleGoToEditHabitScreen} />

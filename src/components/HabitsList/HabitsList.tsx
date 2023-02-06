@@ -5,22 +5,24 @@ import {Habit} from '../Habit/Habit';
 import {Habit as HabitProps} from '../../app/habitsSlice/habitsSlice';
 import {RefreshControl} from 'react-native-gesture-handler';
 import wait from '../../utils/wait';
+import {useDate} from '../../contexts/HabitsContext';
 
 interface HabitsListProps {
-  areUncompletedHabitsShownOnly: boolean;
+  uncompletedHabitsShown: boolean;
 }
 
-const HabitsList = ({areUncompletedHabitsShownOnly}: HabitsListProps) => {
+const HabitsList = ({uncompletedHabitsShown}: HabitsListProps) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const habits = useAppSelector(state => state.habits.habitsList);
+  const habits = useAppSelector(state => state.habits.habits);
+  const {now} = useDate();
 
   const displayedHabits = useMemo(
     () =>
-      areUncompletedHabitsShownOnly
-        ? habits.filter(habit => !habit.completed)
-        : habits,
-    [areUncompletedHabitsShownOnly, habits],
+      uncompletedHabitsShown
+        ? habits[now].filter(habit => !habit.completed)
+        : habits[now],
+    [uncompletedHabitsShown, habits, now],
   );
 
   const renderHabit = ({item}: {item: HabitProps}) => <Habit {...item} />;

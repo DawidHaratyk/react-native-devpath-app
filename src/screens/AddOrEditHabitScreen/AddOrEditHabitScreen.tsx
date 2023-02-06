@@ -2,8 +2,8 @@ import {Alert, Button, StyleSheet, Text, View} from 'react-native';
 import React, {useMemo, useState} from 'react';
 import {SubmitHandler, useForm} from 'react-hook-form';
 import FormInput from '../../components/FormInput/FormInput';
-import {useAppDispatch, useAppSelector} from '../../app/hooks/hooks';
-import {addHabit, editHabit, Habit} from '../../app/habitsSlice/habitsSlice';
+import {useAppDispatch} from '../../app/hooks/hooks';
+import {addHabit, editHabit} from '../../app/habitsSlice/habitsSlice';
 import Input from '../../components/Input/Input';
 import {formValidation} from '../../constants/formValidation';
 import {yupResolver} from '@hookform/resolvers/yup';
@@ -12,6 +12,7 @@ import TagWithDeleteButton from '../../components/TagWithDeleteButton/TagWithDel
 import SelectDropdown from 'react-native-select-dropdown';
 import {difficulties} from '../../constants/variables';
 import useHabitValues from './hooks/useHabitValues';
+import {useDate} from '../../contexts/HabitsContext';
 
 interface AddOrEditHabitScreenProps {
   route: RouteProps;
@@ -23,14 +24,13 @@ const AddOrEditHabitScreen = ({
   navigation,
 }: AddOrEditHabitScreenProps) => {
   const habitId = route.params?.habitId;
+  const isEditingHabit = !!habitId;
 
-  const {habitToEdit, initialTagsList, isEditingHabit, submitButtonText} =
-    useHabitValues(habitId);
+  const {habitToEdit, submitButtonText} = useHabitValues(habitId);
   const dispatch = useAppDispatch();
-  const habitsList = useAppSelector(state => state.habits.habitsList);
+  const {now} = useDate();
 
-  const [currentTypedTag, setCurrentTypedTag] = useState('');
-  const [tagsList, setTagsList] = useState(initialTagsList || []);
+  const [tagName, setTagName] = useState('');
 
   const {
     control,
@@ -45,16 +45,18 @@ const AddOrEditHabitScreen = ({
       description: habitToEdit?.description || '',
       completed: habitToEdit?.completed || false,
       difficultyCount: habitToEdit?.difficultyCount || 1,
+      tags: habitToEdit?.tags || [],
     },
   });
 
   const handleAddTag = () => {
-    if (tagsList.includes(currentTypedTag)) {
+    if (tagsList.includes(tagName)) {
       return Alert.alert('Typed tag is already in list ;)');
     }
 
-    if (currentTypedTag) {
-      setTagsList(prevState => [...prevState, currentTypedTag]);
+    if (tagName) {
+      setValue('tags', [...getValues().tags, tagName]);
+      setTagName('');
     }
   };
 
@@ -62,37 +64,41 @@ const AddOrEditHabitScreen = ({
     name,
     description,
     difficultyCount,
+    completed,
+    tags,
+    completedDate,
   }) => {
-    const currentBiggestId = habitsList.length
-      ? Math.max(...habitsList.map(habit => habit.id))
-      : 0;
-
     const habitContent = {
       name,
       description,
-      tags: tagsList,
+      tags,
       difficultyCount,
-      id: isEditingHabit ? habitId : currentBiggestId + 1,
-      completedData: null,
+      id: habitId || 0,
+      completed,
+      completedDate,
     };
 
-    // how to avoid the typing below?
     isEditingHabit
-      ? dispatch(editHabit(habitContent as Habit))
-      : dispatch(addHabit(habitContent as Habit));
+      ? dispatch(editHabit({habitContent, now}))
+      : dispatch(addHabit({habitContent, now}));
+
     navigation.navigate('HabitsScreen');
   };
+
+  const tagsList = getValues().tags;
+
+  console.log(tagsList);
 
   const tags = useMemo(
     () =>
       tagsList?.length ? (
         tagsList?.map((tag, key) => (
-          <TagWithDeleteButton tag={tag} setTagsList={setTagsList} key={key} />
+          <TagWithDeleteButton tag={tag} control={control} key={key} />
         ))
       ) : (
         <Text>No available tags yet</Text>
       ),
-    [tagsList],
+    [tagsList, control],
   );
 
   return (
@@ -105,8 +111,8 @@ const AddOrEditHabitScreen = ({
       />
       <View style={styles.tagsInputAndButton}>
         <Input
-          value={currentTypedTag}
-          onChangeText={setCurrentTypedTag}
+          value={tagName}
+          onChangeText={setTagName}
           placeholder="tag"
           addditionalStyles={styles.inputAdditionalStyles}
         />

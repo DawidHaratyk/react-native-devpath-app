@@ -12,7 +12,6 @@ type HabitsScreenNavigationProp = NativeStackNavigationProp<
 type AddOrEditHabitScreenProps =
   | {
       habitId?: number;
-      areUncompletedHabitsShownOnly?: boolean;
     }
   | undefined;
 
