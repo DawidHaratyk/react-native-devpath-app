@@ -49,6 +49,13 @@ const AddOrEditHabitScreen = ({
     },
   });
 
+  // what is wrong with useFieldArray hook? I can't loop through fields
+
+  // const {fields, remove} = useFieldArray<FormValues>({
+  //   control,
+  //   name: 'array',
+  // });
+
   const handleAddTag = () => {
     if (tagsList.includes(tagName)) {
       return Alert.alert('Typed tag is already in list ;)');
@@ -87,13 +94,16 @@ const AddOrEditHabitScreen = ({
 
   const tagsList = getValues().tags;
 
-  console.log(tagsList);
-
   const tags = useMemo(
     () =>
       tagsList?.length ? (
         tagsList?.map((tag, key) => (
-          <TagWithDeleteButton tag={tag} control={control} key={key} />
+          <TagWithDeleteButton
+            tag={tag}
+            control={control}
+            index={key}
+            key={key}
+          />
         ))
       ) : (
         <Text>No available tags yet</Text>

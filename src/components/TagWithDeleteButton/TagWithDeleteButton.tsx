@@ -1,33 +1,27 @@
 import {Button, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {Control} from 'react-hook-form';
-import {useController} from 'react-hook-form/dist/useController';
-import { useFormState } from 'react-hook-form/dist/useFormState';
+import {Control, useFieldArray} from 'react-hook-form';
 
 interface TagWithDeleteButtonProps {
   tag: string;
   control: Control;
+  index: number;
 }
 
-const TagWithDeleteButton = ({tag, control}: TagWithDeleteButtonProps) => {
-  const {field} = useController({
+const TagWithDeleteButton = ({
+  tag,
+  control,
+  index,
+}: TagWithDeleteButtonProps) => {
+  const {remove} = useFieldArray({
     control,
-    name: "tags"
+    name: 'tags',
   });
-
-  const deleteItself = () => {
-    const index = getValues(). .indexOf(tag);
-
-    setValue('tags', tags.splice(index, 1));
-  };
 
   return (
     <View style={styles.tagContainer}>
       <Text>{tag}</Text>
-      <Button
-        title="delete"
-        onPress={() => field.onChange((xd: string) => console.log(first))}
-      />
+      <Button title="delete" onPress={() => remove(index)} />
     </View>
   );
 };

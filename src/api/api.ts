@@ -1,3 +1,3 @@
 import {TodoistApi} from '@doist/todoist-api-typescript';
 
-export const api = new TodoistApi('a55027c5e564be487f68051071022850058454b2');
+export const api = new TodoistApi('c830686268bcca4ba513e4c08588f87d39b51dad');

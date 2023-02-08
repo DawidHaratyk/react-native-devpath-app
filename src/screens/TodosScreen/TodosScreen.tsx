@@ -22,6 +22,8 @@ interface TodosScreenProps {
 const TodosScreen = ({navigation}: TodosScreenProps) => {
   const {data, isLoading} = useQuery<Task[] | void, Error>(['todos'], getTasks);
 
+  console.log({data}, '--------------------------');
+
   const renderItem = ({item}: RenderTodoProps) => (
     <TodoItem {...item} key={item.id} />
   );
