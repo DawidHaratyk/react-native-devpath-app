@@ -11,6 +11,7 @@ import {
 } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import habitsSlice from './habitsSlice/habitsSlice';
+import themeSlice from './themeSlice/themeSlice';
 
 const persistConfig = {
   key: 'root',
@@ -20,6 +21,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   habits: habitsSlice,
+  theme: themeSlice,
 });
 
 const persistedHabits = persistReducer(persistConfig, rootReducer);

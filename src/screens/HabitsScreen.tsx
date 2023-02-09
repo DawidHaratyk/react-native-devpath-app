@@ -20,8 +20,7 @@ const HabitsScreen = ({navigation}: HabitsScreenProps) => {
   const {now} = useDate();
 
   const habits = useAppSelector(state => state.habits.habits);
-
-  console.log({habits, now});
+  const {theme} = useAppSelector(state => state.theme);
 
   const uncompletedHabitsCount = habits[now].filter(
     habit => !habit.completed,
@@ -35,7 +34,9 @@ const HabitsScreen = ({navigation}: HabitsScreenProps) => {
   const goToAddHabitScreen = () => navigation.navigate('AddOrEditHabitScreen');
 
   return (
-    <View style={styles.habitsScreen}>
+    <View
+      style={[styles.habitsScreen, theme === 'dark' && styles.darkContainer]}>
+      <Text>Count of uncompleted: {uncompletedHabitsCount}</Text>
       <Text style={styles.habitsHeader}>List of habits:</Text>
       <HabitsList uncompletedHabitsShown={uncompletedHabitsShown} />
       <View style={styles.addHabitIconContainer}>
@@ -47,7 +48,6 @@ const HabitsScreen = ({navigation}: HabitsScreenProps) => {
         </View>
         <View>
           <Text>Count of completed: {completedHabitsCount}</Text>
-          <Text>Count of uncompleted: {uncompletedHabitsCount}</Text>
         </View>
         <FloatingButton handleClick={goToAddHabitScreen} />
       </View>
@@ -76,5 +76,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     flexGrow: 1,
+  },
+  darkContainer: {
+    backgroundColor: 'gray',
   },
 });
